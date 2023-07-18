@@ -50,9 +50,18 @@
   border-radius: 4px;
   width: 60px;
   height: 60px;
-
+  /* text-transform: uppercase; */
   margin: 2px 2px;
 }
 .filled-box {
   border: 2px solid black;
+}
+.bg-green {
+  background-color: greenyellow;
+}
+.bg-gray {
+  background-color: gray;
+}
+.bg-yellow {
+  background-color: yellow;
 }
