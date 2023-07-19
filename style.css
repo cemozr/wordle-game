@@ -1,7 +1,7 @@
 #keyboard-container {
   display: block;
   position: absolute;
-  bottom: 30vh;
+  bottom: 25vh;
   width: 70vw;
   height: 5vh;
 }
@@ -23,6 +23,8 @@
   height: 100%;
   text-transform: uppercase;
   cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px;
 }
 .main {
   display: flex;
@@ -35,6 +37,9 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  margin-top: 70px;
+  box-shadow: 2px 2px 10px;
+  border-radius: 5px;
 }
 .letter-row {
   display: flex;
@@ -47,6 +52,7 @@
   justify-content: center;
   align-items: center;
   border: 2px solid gray;
+  background-color: aliceblue;
   border-radius: 4px;
   width: 60px;
   height: 60px;
@@ -57,11 +63,14 @@
   border: 2px solid black;
 }
 .bg-green {
-  background-color: greenyellow;
+  background-color: #98d8aa;
 }
 .bg-gray {
-  background-color: gray;
+  background-color: #9db2bf;
 }
 .bg-yellow {
-  background-color: yellow;
+  background-color: #f3e99f;
+}
+body {
+  background-color: #9681eb;
 }

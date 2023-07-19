@@ -1,4 +1,5 @@
 import { WORDS } from "./words.js";
+toastr.options.positionClass = "toast-top-full-width";
 const gameBoard = document.getElementById("game-board");
 let totalGuesses = 6;
 let remainingGuesses = totalGuesses;
@@ -20,6 +21,40 @@ function initGameBoard() {
   }
 }
 initGameBoard();
+const onScreenKeyboard = document.getElementsByClassName("keyboard-box-btn");
+const onScreenKeyboardEnter = document.getElementById("keyboard-box-btn-enter");
+const onScreenKeyboardDel = document.getElementById("keyboard-box-btn-del");
+for (let i = 0; i < onScreenKeyboard.length; i++) {
+  onScreenKeyboard[i].addEventListener("click", (e) => {
+    let pressedKey = e.target.innerHTML;
+    let enter = onScreenKeyboardEnter.innerHTML;
+    let del = onScreenKeyboardDel.innerHTML;
+    console.log(pressedKey);
+    console.log(enter);
+    if (remainingGuesses == 0) {
+      console.log(1);
+      return;
+    }
+    if (pressedKey === del && playerGuess.length != 0) {
+      console.log(2);
+      removeLetter(playerGuess);
+    }
+
+    if (pressedKey === enter && playerGuess.length === 5) {
+      console.log(3);
+      check(remainingGuesses);
+    }
+
+    console.log(e.code);
+    if (pressedKey !== del && pressedKey !== enter) {
+      addLetter(pressedKey, remainingGuesses);
+    } // else if (playerGuess.length !== 5) {
+    //   console.log(playerGuess.length);
+    //   letterAlert();
+    //   return;
+    // }
+  });
+}
 
 document.addEventListener("keyup", (event) => {
   let pressedKey = String(event.key);
@@ -53,36 +88,49 @@ function removeLetter(playerGuess) {
   console.log("removedLetterOrder: " + playerGuess.length);
 }
 
-function check() {
+function check(pressedKey) {
   let row = document.getElementsByClassName("letter-row")[6 - remainingGuesses];
   let i;
 
   for (i = 0; i < answer.length; i++) {
     let box = row.children[i];
-    if (answer[i] == playerGuess[i]) {
+    if (answer[i] == playerGuess[i] && playerGuess.length == 5) {
       box.classList.add("bg-green");
+      row.classList.add("animate__animated", "animate__bounce");
       console.log(5);
       continue;
     }
     let checkLetter = answer[i].localeCompare(playerGuess[i]);
     let checkLetterYellow = answer.includes(playerGuess[i]);
-    if (checkLetterYellow) {
+
+    if (checkLetterYellow && playerGuess.length == 5) {
       box.classList.add("bg-yellow");
       console.log(6);
     }
-    if (checkLetter !== 0) {
+    if (checkLetter !== 0 && playerGuess.length == 5) {
       box.classList.add("bg-gray");
       console.log(5);
     }
+
+    if (pressedKey === "Enter") {
+      break;
+      continue;
+    }
+  }
+  if (playerGuess.length != 5) {
+    letterAlert();
+    return;
   }
   // console.log(playerGuess);
   let checkWord = String(answer).localeCompare(playerGuess.join(""));
   // console.log(answer);
   if (checkWord == 0) {
-    console.log("Tebrikler!");
+    toastr.success("Tebrikler!");
   } else {
-    console.log("Tekrar Dene!");
-    // remainingGuesses -= 1;
+    toastr.error("Tekrar Deneyin!");
+    remainingGuesses -= 1;
+    playerGuess.splice(0, 5);
+    console.log(playerGuess);
   }
 }
 
@@ -94,14 +142,13 @@ function addLetter(pressedKey) {
   pressedKey = pressedKey.toLowerCase();
   let row = document.getElementsByClassName("letter-row")[6 - remainingGuesses];
   let box = row.children[playerGuess.length];
-  box.classList.add("filled-box");
+  box.classList.add("filled-box", "animate__animated", "animate__flip");
   box.textContent = pressedKey;
   playerGuess.push(pressedKey);
-  // if (removeLetter() == true) {
-  //   letterOrder -= 1;
-  // } else {
-  console.log("addedLetterOrder: " + playerGuess.length);
-  // }
 
+  console.log("addedLetterOrder: " + playerGuess.length);
   console.log(playerGuess);
+}
+function letterAlert() {
+  toastr.warning("Eksik Harf Girdiniz!");
 }
