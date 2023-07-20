@@ -8,6 +8,7 @@ let letterOrder = 0;
 let answer = WORDS[Math.floor(Math.random() * WORDS.length)];
 
 console.log(answer);
+
 function initGameBoard() {
   for (let i = 0; i < totalGuesses; i++) {
     let letterRow = document.createElement("div");
@@ -27,8 +28,14 @@ const onScreenKeyboardDel = document.getElementById("keyboard-box-btn-del");
 for (let i = 0; i < onScreenKeyboard.length; i++) {
   onScreenKeyboard[i].addEventListener("click", (e) => {
     let pressedKey = e.target.innerHTML;
+
+    let pressedKeysBoxes = [];
+    pressedKeysBoxes = e.target;
+
     let enter = onScreenKeyboardEnter.innerHTML;
     let del = onScreenKeyboardDel.innerHTML;
+
+    console.log("pressedKeysBoxes: " + pressedKeysBoxes);
     console.log(pressedKey);
     console.log(enter);
     if (remainingGuesses == 0) {
@@ -42,23 +49,47 @@ for (let i = 0; i < onScreenKeyboard.length; i++) {
 
     if (pressedKey === enter && playerGuess.length === 5) {
       console.log(3);
+
+      console.log(pressedKeysBoxes);
+      for (let k = 0; k < onScreenKeyboard.length; ++k) {
+        if (
+          answer.includes(onScreenKeyboard[k].innerHTML) &&
+          playerGuess.includes(onScreenKeyboard[k].innerHTML)
+        ) {
+          let found = false;
+          for (let j = 0; j < 5; j++) {
+            if (
+              answer[j] == onScreenKeyboard[k].innerHTML &&
+              playerGuess[j] == onScreenKeyboard[k].innerHTML
+            ) {
+              found = true;
+              onScreenKeyboard[k].classList.add("bg-green");
+              if (onScreenKeyboard[k].classList.contains("bg-green")) {
+                onScreenKeyboard[k].classList.remove("bg-yellow");
+              }
+              break;
+            }
+          }
+          if (!found) onScreenKeyboard[k].classList.add("bg-yellow");
+        } else if (playerGuess.includes(onScreenKeyboard[k].innerHTML)) {
+          onScreenKeyboard[k].classList.add("bg-gray");
+        }
+      }
+
       check(remainingGuesses);
     }
 
-    console.log(e.code);
     if (pressedKey !== del && pressedKey !== enter) {
       addLetter(pressedKey, remainingGuesses);
-    } // else if (playerGuess.length !== 5) {
-    //   console.log(playerGuess.length);
-    //   letterAlert();
-    //   return;
-    // }
+    }
   });
 }
 
 document.addEventListener("keyup", (event) => {
   let pressedKey = String(event.key);
-  console.log(pressedKey);
+  let pressedKeysList = [];
+  pressedKeysList.push(pressedKey);
+
   if (remainingGuesses == 0) {
     console.log(1);
     return;
@@ -69,10 +100,44 @@ document.addEventListener("keyup", (event) => {
   }
   if (pressedKey === "Enter") {
     console.log(3);
+
+    for (let k = 0; k < onScreenKeyboard.length; ++k) {
+      if (
+        answer.includes(onScreenKeyboard[k].innerHTML) &&
+        playerGuess.includes(onScreenKeyboard[k].innerHTML)
+      ) {
+        let found = false;
+        for (let j = 0; j < 5; j++) {
+          if (
+            answer[j] == onScreenKeyboard[k].innerHTML &&
+            playerGuess[j] == onScreenKeyboard[k].innerHTML
+          ) {
+            found = true;
+            onScreenKeyboard[k].classList.add(
+              "bg-green",
+              "animate__animated",
+              "animate__heartBeat"
+            );
+            if (onScreenKeyboard[k].classList.contains("bg-green")) {
+              onScreenKeyboard[k].classList.remove("bg-yellow");
+            }
+            break;
+          }
+        }
+        if (!found)
+          onScreenKeyboard[k].classList.add(
+            "bg-yellow",
+            "animate__animated",
+            "animate__heartBeat"
+          );
+      } else if (playerGuess.includes(onScreenKeyboard[k].innerHTML)) {
+        onScreenKeyboard[k].classList.add("bg-gray");
+      }
+    }
+    console.log(onScreenKeyboard);
     check(remainingGuesses);
   }
 
-  console.log(event.code);
   if (event.code.startsWith("Key") || event.code == "Quote") {
     addLetter(pressedKey, remainingGuesses);
   }
@@ -84,7 +149,7 @@ function removeLetter(playerGuess) {
   box.classList.remove("filled-box");
   box.textContent = "";
   playerGuess.pop();
-  console.log(playerGuess);
+  console.log("playerGuess" + playerGuess);
   console.log("removedLetterOrder: " + playerGuess.length);
 }
 
@@ -97,6 +162,7 @@ function check(pressedKey) {
     if (answer[i] == playerGuess[i] && playerGuess.length == 5) {
       box.classList.add("bg-green");
       row.classList.add("animate__animated", "animate__bounce");
+
       console.log(5);
       continue;
     }
@@ -125,7 +191,10 @@ function check(pressedKey) {
   let checkWord = String(answer).localeCompare(playerGuess.join(""));
   // console.log(answer);
   if (checkWord == 0) {
-    toastr.success("Tebrikler!");
+    toastr.success("Tebrikler! Bir Sonraki Kelimeye Geçtiniz.");
+    setTimeout(function () {
+      location.reload();
+    }, 3000);
   } else {
     toastr.error("Tekrar Deneyin!");
     remainingGuesses -= 1;
@@ -142,6 +211,8 @@ function addLetter(pressedKey) {
   pressedKey = pressedKey.toLowerCase();
   let row = document.getElementsByClassName("letter-row")[6 - remainingGuesses];
   let box = row.children[playerGuess.length];
+
+  // keyBox.classList.add("animate__animated", "animate__heartBeat");
   box.classList.add("filled-box", "animate__animated", "animate__flip");
   box.textContent = pressedKey;
   playerGuess.push(pressedKey);
@@ -150,5 +221,7 @@ function addLetter(pressedKey) {
   console.log(playerGuess);
 }
 function letterAlert() {
-  toastr.warning("Eksik Harf Girdiniz!");
+  if (playerGuess.length != 5) {
+    toastr.warning("Eksik Harf Girdiniz!");
+  }
 }
