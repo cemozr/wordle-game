@@ -49,6 +49,9 @@ for (let i = 0; i < onScreenKeyboard.length; i++) {
 
     if (pressedKey === enter && playerGuess.length === 5) {
       console.log(3);
+      let row =
+        document.getElementsByClassName("letter-row")[6 - remainingGuesses];
+      row.classList.add("animate__animated", "animate__bounce");
 
       console.log(pressedKeysBoxes);
       for (let k = 0; k < onScreenKeyboard.length; ++k) {
@@ -187,6 +190,36 @@ function check(pressedKey) {
     letterAlert();
     return;
   }
+  console.log(
+    "WORDS includes playerguess ?? :  " + WORDS.includes(playerGuess.join(""))
+  );
+  if (!WORDS.includes(playerGuess.join(""))) {
+    toastr.error("Geçerli Bir Kelime Deneyin!");
+    playerGuess.slice(0, 5);
+    remainingGuesses += 1;
+
+    for (let i = 0; i < answer.length; i++) {
+      let box = row.children[i];
+      box.innerHTML = "";
+      box.classList.remove(
+        "bg-green",
+        "bg-yellow",
+        "bg-gray",
+        "animate__animated",
+        "animate__heartBeat"
+      );
+      for (let k = 0; k < onScreenKeyboard.length; k++) {
+        onScreenKeyboard[k].classList.remove(
+          "bg-green",
+          "bg-yellow",
+          "bg-gray",
+          "animate__animated",
+          "animate__heartBeat"
+        );
+        console.log("asdasd" + onScreenKeyboard[k]);
+      }
+    }
+  }
   // console.log(playerGuess);
   let checkWord = String(answer).localeCompare(playerGuess.join(""));
   // console.log(answer);
@@ -212,7 +245,6 @@ function addLetter(pressedKey) {
   let row = document.getElementsByClassName("letter-row")[6 - remainingGuesses];
   let box = row.children[playerGuess.length];
 
-  // keyBox.classList.add("animate__animated", "animate__heartBeat");
   box.classList.add("filled-box", "animate__animated", "animate__flip");
   box.textContent = pressedKey;
   playerGuess.push(pressedKey);
